@@ -68,15 +68,16 @@ jobs:
           docker build -t ai381-lab2:${{ github.sha }} .
 
       - name: Trivy security scan
-        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8
-        with:
-          image-ref: ai381-lab2:${{ github.sha }}
-          format: table
-          exit-code: '1'
-          severity: HIGH,CRITICAL
-          vuln-type: os,library
-          ignore-unfixed: true
-          cache: 'false'
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.65.0 image \
+            --format table \
+            --exit-code 1 \
+            --severity HIGH,CRITICAL \
+            --vuln-type os,library \
+            --ignore-unfixed \
+            ai381-lab2:${{ github.sha }}
 
       - name: Login to GHCR
         if: success()
